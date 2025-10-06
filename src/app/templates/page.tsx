@@ -1,1 +1,194 @@
-export default function Page(){return (<main className="p-6"><h1 className="text-2xl font-bold">Templates</h1></main>);}
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import { standards as allStandards } from "@/data/standards";
+
+type Template = {
+  id: string;
+  title: string;
+  subject: "ELA" | "Math" | "";
+  grade: string; // K,1-12 or ""
+  objectives: string;
+  activities: string;
+  materials: string;
+  standardIds: string[];
+};
+
+const grades = ["","K","1","2","3","4","5","6","7","8","9","10","11","12"];
+const subjects: Array<Template["subject"]> = ["","ELA","Math"];
+
+const load = <T,>(k: string, fallback: T): T => {
+  try { const v = localStorage.getItem(k); return v ? JSON.parse(v) as T : fallback } catch { return fallback }
+};
+const save = (k: string, v: unknown) => localStorage.setItem(k, JSON.stringify(v));
+
+export default function TemplatesPage() {
+  const [items, setItems] = useState<Template[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [q, setQ] = useState("");
+  const [filterSubject, setFilterSubject] = useState<Template["subject"]>("");
+  const [filterGrade, setFilterGrade] = useState<string>("");
+
+  // form state
+  const [title, setTitle] = useState("");
+  const [subject, setSubject] = useState<Template["subject"]>("");
+  const [grade, setGrade] = useState<string>("");
+  const [objectives, setObjectives] = useState("");
+  const [activities, setActivities] = useState("");
+  const [materials, setMaterials] = useState("");
+  const [stdQuery, setStdQuery] = useState("");
+  const [standardIds, setStandardIds] = useState<string[]>([]);
+
+  useEffect(() => { setItems(load<Template[]>("templates", [])); }, []);
+  useEffect(() => { save("templates", items); }, [items]);
+
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle(""); setSubject(""); setGrade("");
+    setObjectives(""); setActivities(""); setMaterials("");
+    setStdQuery(""); setStandardIds([]);
+  };
+
+  const beginEdit = (t: Template) => {
+    setEditingId(t.id);
+    setTitle(t.title); setSubject(t.subject); setGrade(t.grade);
+    setObjectives(t.objectives); setActivities(t.activities); setMaterials(t.materials);
+    setStandardIds(t.standardIds ?? []);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const upsert = () => {
+    if (!title.trim()) return;
+    if (editingId) {
+      setItems(prev => prev.map(it => it.id === editingId ? { ...it,
+        title: title.trim(), subject, grade, objectives, activities, materials, standardIds } : it));
+    } else {
+      const id = crypto.randomUUID();
+      setItems(prev => [...prev, { id, title: title.trim(), subject, grade, objectives, activities, materials, standardIds }]);
+    }
+    resetForm();
+  };
+
+  const remove = (id: string) => setItems(prev => prev.filter(it => it.id !== id));
+
+  const toggleStd = (id: string) => setStandardIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const standardsFiltered = useMemo(() => {
+    const ql = stdQuery.toLowerCase();
+    const list = allStandards.filter(s =>
+      (filterSubject ? s.subject === filterSubject : true) &&
+      (filterGrade ? s.grade === filterGrade : true) &&
+      (ql ? (s.text.toLowerCase().includes(ql) || s.id.toLowerCase().includes(ql)) : true)
+    );
+    return list.slice(0, 12);
+  }, [stdQuery, filterSubject, filterGrade]);
+
+  const filtered = useMemo(() => {
+    const ql = q.toLowerCase();
+    return items.filter(t =>
+      (filterSubject ? t.subject === filterSubject : true) &&
+      (filterGrade ? t.grade === filterGrade : true) &&
+      (ql ? (
+        t.title.toLowerCase().includes(ql) ||
+        t.objectives.toLowerCase().includes(ql) ||
+        t.activities.toLowerCase().includes(ql) ||
+        t.materials.toLowerCase().includes(ql)
+      ) : true)
+    );
+  }, [items, q, filterSubject, filterGrade]);
+
+  return (
+    <main className="p-6 space-y-8">
+      <h1 className="text-2xl font-bold">Templates</h1>
+
+      <section className="space-y-4">
+        <h2 className="font-semibold">{editingId ? "Edit template" : "New template"}</h2>
+        <div className="grid gap-2 md:grid-cols-6">
+          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 md:col-span-3"/>
+          <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
+            {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
+          </select>
+          <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2">
+            {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
+          </select>
+          <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
+        </div>
+        <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <textarea value={activities} onChange={e=>setActivities(e.target.value)} placeholder="Activities" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
+
+        <div>
+          <label className="block text-sm font-medium">Attach standards (optional)</label>
+          <div className="grid gap-2 md:grid-cols-4">
+            <input value={stdQuery} onChange={e=>setStdQuery(e.target.value)} placeholder="Search standards" className="border rounded px-3 py-2 md:col-span-2"/>
+            <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
+              {subjects.map(s => <option key={s} value={s}>{s || "All subjects"}</option>)}
+            </select>
+            <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2">
+              {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
+            </select>
+          </div>
+          <ul className="mt-2 space-y-1 max-h-44 overflow-auto border rounded p-2">
+            {standardsFiltered.map(s => (
+              <li key={s.id}>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={standardIds.includes(s.id)} onChange={()=>toggleStd(s.id)} />
+                  <span className="text-gray-600">{s.subject} • Grade {s.grade} • {s.id}</span> {s.text}
+                </label>
+              </li>
+            ))}
+          </ul>
+          {standardIds.length > 0 && (
+            <div className="text-sm text-gray-700 mt-2">Selected: {standardIds.join(", ")}</div>
+          )}
+        </div>
+        {editingId && (
+          <div className="flex gap-2">
+            <button onClick={resetForm} className="border rounded px-3 py-2">Cancel</button>
+            <button onClick={()=>{ remove(editingId); resetForm(); }} className="border rounded px-3 py-2 text-red-600">Delete</button>
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-semibold">Your templates ({filtered.length})</h2>
+        <div className="grid gap-2 md:grid-cols-4">
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search" className="border rounded px-3 py-2 md:col-span-2"/>
+          <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
+            {subjects.map(s => <option key={s} value={s}>{s || "All subjects"}</option>)}
+          </select>
+          <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2">
+            {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
+          </select>
+        </div>
+        <ul className="space-y-3">
+          {filtered.map(t => (
+            <li key={t.id} className="border rounded p-3">
+              <div className="flex items-center justify-between">
+                <div className="font-semibold">{t.title}</div>
+                <div className="text-sm text-gray-600">{t.subject || ""} {t.grade ? `• Grade ${t.grade}`: ""}</div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
+                <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
+                <div><div className="text-gray-600">Activities</div><div>{t.activities || <span className="text-gray-400">—</span>}</div></div>
+                <div><div className="text-gray-600">Materials</div><div>{t.materials || <span className="text-gray-400">—</span>}</div></div>
+              </div>
+              {t.standardIds?.length ? (
+                <ul className="mt-2 text-sm space-y-1">
+                  {t.standardIds.map(id => {
+                    const s = allStandards.find(x => x.id === id);
+                    if (!s) return null;
+                    return <li key={id} className="flex items-start gap-2"><span className="text-gray-600">{s.id}</span><span>{s.text}</span></li>
+                  })}
+                </ul>
+              ) : null}
+              <div className="mt-2 flex gap-2">
+                <button onClick={()=>beginEdit(t)} className="border rounded px-3 py-1 text-sm">Edit</button>
+                <button onClick={()=>remove(t.id)} className="border rounded px-3 py-1 text-sm text-red-600">Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+  );
+}

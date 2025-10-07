@@ -154,7 +154,17 @@ export default function TemplatesPage() {
           <div className="grid md:grid-cols-6 gap-2 items-start">
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 md:col-span-2"/>
             <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 md:col-span-3"/>
-            <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
+            <div className="flex gap-2">
+              <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
+              <button type="button" disabled={aiLoading} onClick={async()=>{
+                try {
+                  setAiLoading(true);
+                  const res = await fetch("/api/activities/describe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: newActivityTitle, description: newActivityDesc, materials }) });
+                  const data = await res.json();
+                  if (data?.text) setNewActivityDesc(prev => (prev?.trim()? prev+"\n" : "") + data.text);
+                } finally { setAiLoading(false); }
+              }} className="border rounded px-3 py-2 bg-emerald-600 text-white">{aiLoading?"AI…":"AI Describe"}</button>
+            </div>
           </div>
           {activities.length>0 && (
             <ul className="space-y-1">

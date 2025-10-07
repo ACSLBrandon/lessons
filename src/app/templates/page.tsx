@@ -216,7 +216,18 @@ export default function TemplatesPage() {
               <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
                 <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Activities</div><div>{(t.activities && t.activities.length>0) ? (
-                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(<li key={i}><span className="font-medium">{a.title}</span>{a.description?`: ${a.description}`:''}</li>))}</ul>
+                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(
+                    <li key={i}>
+                      {typeof a === "string" ? (
+                        a
+                      ) : (
+                        <div>
+                          <div className="font-medium">{a.title}</div>
+                          {a.description ? <div className="text-gray-600">{a.description}</div> : null}
+                        </div>
+                      )}
+                    </li>
+                  ))}</ul>
                 ) : <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Materials</div><div>{t.materials || <span className="text-gray-400">—</span>}</div></div>
               </div>

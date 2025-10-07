@@ -49,9 +49,9 @@ export default function ExportPage() {
       headStyles: { fillColor: [37, 99, 235] },
     });
 
-    // Templates
+    // Lesson Plans
     const last = (doc as unknown as { lastAutoTable?: { finalY?: number }}).lastAutoTable; const y = (last?.finalY ?? 100);
-    doc.text("Templates", 40, y + 30);
+    doc.text("Lesson Plans", 40, y + 30);
     autoTable(doc, {
       startY: y + 40,
       head: [["Title","Subject","Grade","Objectives","Activities","Materials","Standards"]],
@@ -75,7 +75,7 @@ export default function ExportPage() {
         <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Document title" className="border rounded px-3 py-2 md:col-span-2"/>
         <button onClick={exportPdf} className="border rounded px-3 py-2 bg-blue-600 text-white">Export PDF</button>
       </div>
-      <p className="text-sm text-gray-600">Exports your current week schedule and templates stored in this browser.</p>
+      <p className="text-sm text-gray-600">Exports your current week schedule and lesson plans stored in this browser.</p>
     </main>
   );
 }

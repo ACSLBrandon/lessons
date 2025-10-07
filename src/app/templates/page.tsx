@@ -98,10 +98,10 @@ export default function TemplatesPage() {
 
   return (
     <main className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold">Templates</h1>
+      <h1 className="text-2xl font-bold">Lesson Plans</h1>
 
       <section className="space-y-4">
-        <h2 className="font-semibold">{editingId ? "Edit template" : "New template"}</h2>
+        <h2 className="font-semibold">{editingId ? "Edit lesson plan" : "New lesson plan"}</h2>
         <div className="grid gap-2 md:grid-cols-6">
           <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 md:col-span-3"/>
           <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
@@ -150,7 +150,7 @@ export default function TemplatesPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-semibold">Your templates ({filtered.length})</h2>
+        <h2 className="font-semibold">Your lesson plans ({filtered.length})</h2>
         <div className="grid gap-2 md:grid-cols-4">
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search" className="border rounded px-3 py-2 md:col-span-2"/>
           <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">

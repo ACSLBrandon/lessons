@@ -8,7 +8,7 @@ export default function Home() {
 
       <nav className="grid md:grid-cols-2 gap-4">
         <Link href="/templates" className="border rounded p-4 hover:bg-gray-50">
-          <div className="font-semibold">Templates</div>
+          <div className="font-semibold">Lesson Plans</div>
           <div className="text-sm text-gray-600">Create and manage lesson templates with objectives, activities, materials, and standards.</div>
         </Link>
         <Link href="/standards" className="border rounded p-4 hover:bg-gray-50">

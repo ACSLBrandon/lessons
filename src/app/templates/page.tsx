@@ -8,7 +8,7 @@ type Template = {
   subject: "ELA" | "Math" | "";
   grade: string; // K,1-12 or ""
   objectives: string;
-  activities: string[];
+  activities: { title: string; description?: string }[];
   materials: string;
   concepts?: string;
   discussion?: string;
@@ -35,8 +35,9 @@ export default function TemplatesPage() {
   const [subject, setSubject] = useState<Template["subject"]>("");
   const [grade, setGrade] = useState<string>("");
   const [objectives, setObjectives] = useState("");
-  const [activities, setActivities] = useState<string[]>([]);
-  const [newActivity, setNewActivity] = useState("");
+  const [activities, setActivities] = useState<{ title: string; description?: string }[]>([]);
+  const [newActivityTitle, setNewActivityTitle] = useState("");
+  const [newActivityDesc, setNewActivityDesc] = useState("");
   const [materials, setMaterials] = useState("");
   const [concepts, setConcepts] = useState("");
   const [discussion, setDiscussion] = useState("");
@@ -49,7 +50,7 @@ export default function TemplatesPage() {
   const resetForm = () => {
     setEditingId(null);
     setTitle(""); setSubject(""); setGrade("");
-    setObjectives(""); setActivities([]); setNewActivity(""); setMaterials(""); setConcepts(""); setDiscussion("");
+    setObjectives(""); setActivities([]); setNewActivityTitle(""); setNewActivityDesc(""); setMaterials(""); setConcepts(""); setDiscussion("");
     setStdQuery(""); setStandardIds([]);
   };
 
@@ -57,7 +58,10 @@ export default function TemplatesPage() {
     setEditingId(t.id);
     setTitle(t.title); setSubject(t.subject); setGrade(t.grade);
     setObjectives(t.objectives);
-    setActivities(Array.isArray(t.activities) ? t.activities : (t.activities ? [t.activities as unknown as string] : []));
+    setActivities(Array.isArray(t.activities)
+      ? (typeof t.activities[0] === "string" ? (t.activities as unknown as string[]).map(s=>({ title: s })) : t.activities as {title:string;description?:string}[])
+      : (t.activities ? [{ title: String(t.activities as unknown as string) }] : [])
+    );
     setMaterials(t.materials);
     setConcepts(t.concepts || ""); setDiscussion(t.discussion || "");
     setStandardIds(t.standardIds ?? []);
@@ -123,20 +127,26 @@ export default function TemplatesPage() {
         <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
         <div className="space-y-2">
           <div className="font-medium text-sm">Activities</div>
-          <div className="flex gap-2">
-            <input value={newActivity} onChange={e=>setNewActivity(e.target.value)} placeholder="New activity" className="border rounded px-3 py-2 flex-1"/>
-            <button type="button" onClick={()=>{ const v=newActivity.trim(); if(!v) return; setActivities(prev=>[...prev,v]); setNewActivity(""); }} className="border rounded px-3 py-2">Add</button>
+          <div className="grid md:grid-cols-6 gap-2 items-start">
+            <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 md:col-span-2"/>
+            <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 md:col-span-3"/>
+            <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
           </div>
           {activities.length>0 && (
             <ul className="space-y-1">
               {activities.map((a,i)=> (
-                <li key={i} className="flex items-center justify-between border rounded px-3 py-2">
-                  <span className="text-sm">{a}</span>
+                <li key={i} className="flex items-start justify-between border rounded px-3 py-2">
+                  <div>
+                    <div className="text-sm font-medium">{a.title}</div>
+                    {a.description ? <div className="text-xs text-gray-600">{a.description}</div> : null}
+                  </div>
                   <div className="flex gap-2">
                     <button type="button" onClick={()=>{
-                      const v=prompt("Edit activity", a);
-                      if(v===null) return; const nv=v.trim(); if(!nv) return;
-                      setActivities(prev=> prev.map((x,idx)=> idx===i? nv : x));
+                      const nt=prompt("Edit title", a.title);
+                      if(nt===null) return; const t=nt.trim(); if(!t) return;
+                      const nd=prompt("Edit description (optional)", a.description||"");
+                      const d=(nd===null? (a.description||"") : nd).trim();
+                      setActivities(prev=> prev.map((x,idx)=> idx===i? { title:t, description:d||undefined } : x));
                     }} className="text-sm underline">Edit</button>
                     <button type="button" onClick={()=> setActivities(prev=> prev.filter((_,idx)=> idx!==i))} className="text-sm text-red-600 underline">Remove</button>
                   </div>
@@ -203,7 +213,7 @@ export default function TemplatesPage() {
               <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
                 <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Activities</div><div>{(t.activities && t.activities.length>0) ? (
-                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(<li key={i}>{a}</li>))}</ul>
+                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(<li key={i}><span className="font-medium">{a.title}</span>{a.description?`: ${a.description}`:''}</li>))}</ul>
                 ) : <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Materials</div><div>{t.materials || <span className="text-gray-400">—</span>}</div></div>
               </div>

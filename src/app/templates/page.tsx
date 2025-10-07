@@ -8,7 +8,7 @@ type Template = {
   subject: "ELA" | "Math" | "";
   grade: string; // K,1-12 or ""
   objectives: string;
-  activities: string;
+  activities: string[];
   materials: string;
   concepts?: string;
   discussion?: string;
@@ -35,7 +35,8 @@ export default function TemplatesPage() {
   const [subject, setSubject] = useState<Template["subject"]>("");
   const [grade, setGrade] = useState<string>("");
   const [objectives, setObjectives] = useState("");
-  const [activities, setActivities] = useState("");
+  const [activities, setActivities] = useState<string[]>([]);
+  const [newActivity, setNewActivity] = useState("");
   const [materials, setMaterials] = useState("");
   const [concepts, setConcepts] = useState("");
   const [discussion, setDiscussion] = useState("");
@@ -48,14 +49,16 @@ export default function TemplatesPage() {
   const resetForm = () => {
     setEditingId(null);
     setTitle(""); setSubject(""); setGrade("");
-    setObjectives(""); setActivities(""); setMaterials(""); setConcepts(""); setDiscussion("");
+    setObjectives(""); setActivities([]); setNewActivity(""); setMaterials(""); setConcepts(""); setDiscussion("");
     setStdQuery(""); setStandardIds([]);
   };
 
   const beginEdit = (t: Template) => {
     setEditingId(t.id);
     setTitle(t.title); setSubject(t.subject); setGrade(t.grade);
-    setObjectives(t.objectives); setActivities(t.activities); setMaterials(t.materials);
+    setObjectives(t.objectives);
+    setActivities(Array.isArray(t.activities) ? t.activities : (t.activities ? [t.activities as unknown as string] : []));
+    setMaterials(t.materials);
     setConcepts(t.concepts || ""); setDiscussion(t.discussion || "");
     setStandardIds(t.standardIds ?? []);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -95,7 +98,7 @@ export default function TemplatesPage() {
       (ql ? (
         t.title.toLowerCase().includes(ql) ||
         t.objectives.toLowerCase().includes(ql) ||
-        t.activities.toLowerCase().includes(ql) ||
+        (Array.isArray(t.activities) ? t.activities.join("\n").toLowerCase().includes(ql) : String(t.activities||"").toLowerCase().includes(ql)) ||
         t.materials.toLowerCase().includes(ql)
       ) : true)
     );
@@ -118,7 +121,30 @@ export default function TemplatesPage() {
           <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
         </div>
         <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
-        <textarea value={activities} onChange={e=>setActivities(e.target.value)} placeholder="Activities" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <div className="space-y-2">
+          <div className="font-medium text-sm">Activities</div>
+          <div className="flex gap-2">
+            <input value={newActivity} onChange={e=>setNewActivity(e.target.value)} placeholder="New activity" className="border rounded px-3 py-2 flex-1"/>
+            <button type="button" onClick={()=>{ const v=newActivity.trim(); if(!v) return; setActivities(prev=>[...prev,v]); setNewActivity(""); }} className="border rounded px-3 py-2">Add</button>
+          </div>
+          {activities.length>0 && (
+            <ul className="space-y-1">
+              {activities.map((a,i)=> (
+                <li key={i} className="flex items-center justify-between border rounded px-3 py-2">
+                  <span className="text-sm">{a}</span>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={()=>{
+                      const v=prompt("Edit activity", a);
+                      if(v===null) return; const nv=v.trim(); if(!nv) return;
+                      setActivities(prev=> prev.map((x,idx)=> idx===i? nv : x));
+                    }} className="text-sm underline">Edit</button>
+                    <button type="button" onClick={()=> setActivities(prev=> prev.filter((_,idx)=> idx!==i))} className="text-sm text-red-600 underline">Remove</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
         <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20"/>
         <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20"/>
@@ -176,7 +202,9 @@ export default function TemplatesPage() {
               </div>
               <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
                 <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
-                <div><div className="text-gray-600">Activities</div><div>{t.activities || <span className="text-gray-400">—</span>}</div></div>
+                <div><div className="text-gray-600">Activities</div><div>{(t.activities && t.activities.length>0) ? (
+                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(<li key={i}>{a}</li>))}</ul>
+                ) : <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Materials</div><div>{t.materials || <span className="text-gray-400">—</span>}</div></div>
               </div>
               <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">

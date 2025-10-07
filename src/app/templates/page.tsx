@@ -10,6 +10,8 @@ type Template = {
   objectives: string;
   activities: string;
   materials: string;
+  concepts?: string;
+  discussion?: string;
   standardIds: string[];
 };
 
@@ -35,6 +37,8 @@ export default function TemplatesPage() {
   const [objectives, setObjectives] = useState("");
   const [activities, setActivities] = useState("");
   const [materials, setMaterials] = useState("");
+  const [concepts, setConcepts] = useState("");
+  const [discussion, setDiscussion] = useState("");
   const [stdQuery, setStdQuery] = useState("");
   const [standardIds, setStandardIds] = useState<string[]>([]);
 
@@ -44,7 +48,7 @@ export default function TemplatesPage() {
   const resetForm = () => {
     setEditingId(null);
     setTitle(""); setSubject(""); setGrade("");
-    setObjectives(""); setActivities(""); setMaterials("");
+    setObjectives(""); setActivities(""); setMaterials(""); setConcepts(""); setDiscussion("");
     setStdQuery(""); setStandardIds([]);
   };
 
@@ -52,6 +56,7 @@ export default function TemplatesPage() {
     setEditingId(t.id);
     setTitle(t.title); setSubject(t.subject); setGrade(t.grade);
     setObjectives(t.objectives); setActivities(t.activities); setMaterials(t.materials);
+    setConcepts(t.concepts || ""); setDiscussion(t.discussion || "");
     setStandardIds(t.standardIds ?? []);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -60,10 +65,10 @@ export default function TemplatesPage() {
     if (!title.trim()) return;
     if (editingId) {
       setItems(prev => prev.map(it => it.id === editingId ? { ...it,
-        title: title.trim(), subject, grade, objectives, activities, materials, standardIds } : it));
+        title: title.trim(), subject, grade, objectives, activities, materials, concepts, discussion, standardIds } : it));
     } else {
       const id = crypto.randomUUID();
-      setItems(prev => [...prev, { id, title: title.trim(), subject, grade, objectives, activities, materials, standardIds }]);
+      setItems(prev => [...prev, { id, title: title.trim(), subject, grade, objectives, activities, materials, concepts, discussion, standardIds }]);
     }
     resetForm();
   };
@@ -115,6 +120,8 @@ export default function TemplatesPage() {
         <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
         <textarea value={activities} onChange={e=>setActivities(e.target.value)} placeholder="Activities" className="border rounded px-3 py-2 w-full min-h-20"/>
         <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20"/>
 
         <div>
           <label className="block text-sm font-medium">Attach standards (optional)</label>
@@ -171,6 +178,10 @@ export default function TemplatesPage() {
                 <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Activities</div><div>{t.activities || <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Materials</div><div>{t.materials || <span className="text-gray-400">—</span>}</div></div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
+                <div><div className="text-gray-600">Concepts</div><div>{t.concepts || <span className="text-gray-400">—</span>}</div></div>
+                <div><div className="text-gray-600">Discussion</div><div>{t.discussion || <span className="text-gray-400">—</span>}</div></div>
               </div>
               {t.standardIds?.length ? (
                 <ul className="mt-2 text-sm space-y-1">

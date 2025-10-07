@@ -118,17 +118,29 @@ export default function TemplatesPage() {
 
       <section className="space-y-4">
         <h2 className="font-semibold">{editingId ? "Edit lesson plan" : "New lesson plan"}</h2>
-        <div className="grid gap-2 md:grid-cols-6">
-          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 md:col-span-3"/>
-          <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
-            {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
-          </select>
-          <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2">
-            {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
-          </select>
-          <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
+        <div className="grid gap-2 md:grid-cols-6 items-start">
+          <div className="md:col-span-3">
+            <label className="block text-sm font-medium mb-1">Title</label>
+            <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 w-full"/>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Subject</label>
+            <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 w-full">
+              {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Grade</label>
+            <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2 w-full">
+              {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
+            </select>
+          </div>
+          <div className="self-end">
+            <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
+          </div>
         </div>
         <div className="space-y-2">
+          <label className="block text-sm font-medium">Objectives</label>
           <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
           <div className="flex gap-2">
             <button type="button" disabled={aiLoading} onClick={async ()=>{
@@ -150,7 +162,7 @@ export default function TemplatesPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <div className="font-medium text-sm">Activities</div>
+          <label className="block text-sm font-medium">Activities</label>
           <div className="grid md:grid-cols-6 gap-2 items-start">
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 md:col-span-2"/>
             <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 md:col-span-3"/>
@@ -189,9 +201,18 @@ export default function TemplatesPage() {
             </ul>
           )}
         </div>
-        <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
-        <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20"/>
-        <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Materials</label>
+          <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Concepts</label>
+          <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20"/>
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Discussion</label>
+          <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20"/>
+        </div>
 
         <div>
           <label className="block text-sm font-medium">Attach standards (optional)</label>

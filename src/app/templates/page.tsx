@@ -43,6 +43,7 @@ export default function TemplatesPage() {
   const [discussion, setDiscussion] = useState("");
   const [stdQuery, setStdQuery] = useState("");
   const [standardIds, setStandardIds] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => { setItems(load<Template[]>("templates", [])); }, []);
   useEffect(() => { save("templates", items); }, [items]);
@@ -127,7 +128,27 @@ export default function TemplatesPage() {
           </select>
           <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
         </div>
-        <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
+        <div className="space-y-2">
+          <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
+          <div className="flex gap-2">
+            <button type="button" disabled={aiLoading} onClick={async ()=>{
+              try {
+                setAiLoading(true);
+                const res = await fetch("/api/objectives", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: objectives, subject, grade, standards: standardIds }) });
+                const data = await res.json();
+                if (data?.text) {
+                  const sep = objectives.trim() ? "\n\n" : "";
+                  setObjectives(prev => prev + sep + data.text);
+                }
+              } catch (e) {
+                console.error(e);
+              } finally {
+                setAiLoading(false);
+              }
+            }} className="border rounded px-3 py-2 bg-emerald-600 text-white">{aiLoading?"Generating…":"AI Elaborate"}</button>
+            <span className="text-xs text-gray-600">Uses OpenAI; set OPENAI_API_KEY in deployment.</span>
+          </div>
+        </div>
         <div className="space-y-2">
           <div className="font-medium text-sm">Activities</div>
           <div className="grid md:grid-cols-6 gap-2 items-start">

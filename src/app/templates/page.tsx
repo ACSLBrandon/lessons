@@ -102,7 +102,10 @@ export default function TemplatesPage() {
       (ql ? (
         t.title.toLowerCase().includes(ql) ||
         t.objectives.toLowerCase().includes(ql) ||
-        (Array.isArray(t.activities) ? t.activities.join("\n").toLowerCase().includes(ql) : String(t.activities||"").toLowerCase().includes(ql)) ||
+        (Array.isArray(t.activities)
+          ? t.activities.map(a => typeof a === "string" ? a : `${a.title} ${a.description||""}`).join("\n").toLowerCase().includes(ql)
+          : String(t.activities||"").toLowerCase().includes(ql)
+        ) ||
         t.materials.toLowerCase().includes(ql)
       ) : true)
     );

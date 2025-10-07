@@ -44,6 +44,8 @@ export default function TemplatesPage() {
   const [stdQuery, setStdQuery] = useState("");
   const [standardIds, setStandardIds] = useState<string[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+  const [suggestedIds, setSuggestedIds] = useState<string[]>([]);
+  const [suggestLoading, setSuggestLoading] = useState(false);
 
   useEffect(() => { setItems(load<Template[]>("templates", [])); }, []);
   useEffect(() => { save("templates", items); }, [items]);
@@ -216,7 +218,7 @@ export default function TemplatesPage() {
 
         <div>
           <label className="block text-sm font-medium">Attach standards (optional)</label>
-          <div className="grid gap-2 md:grid-cols-4">
+          <div className="grid gap-2 md:grid-cols-4 items-start">
             <input value={stdQuery} onChange={e=>setStdQuery(e.target.value)} placeholder="Search standards" className="border rounded px-3 py-2 md:col-span-2"/>
             <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
               {subjects.map(s => <option key={s} value={s}>{s || "All subjects"}</option>)}
@@ -224,13 +226,23 @@ export default function TemplatesPage() {
             <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2">
               {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
             </select>
+            <button type="button" disabled={suggestLoading} onClick={async()=>{
+              try {
+                setSuggestLoading(true);
+                const lesson = { title, subject, grade, objectives, activities, materials, concepts, discussion };
+                const candidates = allStandards.map(s=>({ id: s.id, text: s.text, subject: s.subject, grade: s.grade }));
+                const res = await fetch("/api/standards/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lesson, candidates }) });
+                const data = await res.json();
+                if (Array.isArray(data?.ids)) setSuggestedIds(data.ids);
+              } finally { setSuggestLoading(false); }
+            }} className="border rounded px-3 py-2 bg-emerald-600 text-white">{suggestLoading?"AI…":"AI Suggest Standards"}</button>
           </div>
           <ul className="mt-2 space-y-1 max-h-44 overflow-auto border rounded p-2">
             {standardsFiltered.map(s => (
               <li key={s.id}>
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={standardIds.includes(s.id)} onChange={()=>toggleStd(s.id)} />
-                  <span className="text-gray-600">{s.subject} • Grade {s.grade} • {s.id}</span> {s.text}
+                  <span className={`text-gray-600 ${suggestedIds.includes(s.id)?'bg-yellow-100':''}`}>{s.subject} • Grade {s.grade} • {s.id}</span> {s.text}
                 </label>
               </li>
             ))}

@@ -121,23 +121,23 @@ export default function TemplatesPage() {
       <section className="space-y-4">
         <h2 className="font-semibold">{editingId ? "Edit lesson plan" : "New lesson plan"}</h2>
         <div className="grid gap-2 md:grid-cols-6 items-start">
-          <div className="md:col-span-3">
+          <div className="md:col-span-4">
             <label className="block text-sm font-medium mb-1">Title</label>
             <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 w-full"/>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium mb-1">Subject</label>
             <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 h-10 w-full">
               {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
             </select>
           </div>
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-sm font-medium mb-1">Grade</label>
             <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2 h-10 w-full">
               {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
             </select>
           </div>
-          <div className="self-end">
+          <div className="self-end md:col-span-6">
             <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
           </div>
         </div>

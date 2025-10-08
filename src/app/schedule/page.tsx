@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { standards as allStandards } from "@/data/standards";
 
 type Event = {
@@ -72,32 +71,6 @@ export default function SchedulePage() {
           <button onClick={add} className="border rounded px-3 py-2 bg-blue-600 text-white">Add</button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-2">
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium">Attach standards (optional)</label>
-            <input value={standardQuery} onChange={e=>setStandardQuery(e.target.value)} placeholder="Search standards" className="border rounded px-3 py-2 w-full"/>
-            <ul className="mt-2 space-y-1 max-h-40 overflow-auto border rounded p-2">
-              {standardsFiltered.map(s => (
-                <li key={s.id}>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={selectedStandardIds.includes(s.id)} onChange={()=>toggleStd(s.id)} />
-                    <span className="text-gray-600">{s.subject} • Grade {s.grade} • {s.id}</span> {s.text}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Selected standards</label>
-            <ul className="mt-2 space-y-1 text-sm">
-              {selectedStandardIds.map(id => {
-                const s = allStandards.find(x => x.id === id);
-                if (!s) return null;
-                return <li key={id} className="flex items-start gap-2"><span className="text-gray-600">{s.id}</span><span>{s.text}</span></li>
-              })}
-            </ul>
-          </div>
-        </div>
       </section>
 
       <section className="grid md:grid-cols-7 gap-4">
@@ -127,7 +100,6 @@ export default function SchedulePage() {
         ))}
       </section>
 
-      <p className="text-sm text-gray-600">Standards set on the Standards page can help inform your scheduling. See <Link className="underline" href="/standards">Standards</Link>.</p>
     </main>
   );
 }

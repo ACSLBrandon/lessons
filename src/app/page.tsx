@@ -11,17 +11,9 @@ export default function Home() {
           <div className="font-semibold">Lesson Plans</div>
           <div className="text-sm text-gray-600">Create and manage lesson templates with objectives, activities, materials, and standards.</div>
         </Link>
-        <Link href="/standards" className="border rounded p-4 hover:bg-gray-50">
-          <div className="font-semibold">Standards</div>
-          <div className="text-sm text-gray-600">Search, filter, and tag standards; reuse across lessons.</div>
-        </Link>
         <Link href="/schedule" className="border rounded p-4 hover:bg-gray-50">
           <div className="font-semibold">Schedule</div>
           <div className="text-sm text-gray-600">Plan your week; attach standards to lessons.</div>
-        </Link>
-        <Link href="/export" className="border rounded p-4 hover:bg-gray-50">
-          <div className="font-semibold">Export</div>
-          <div className="text-sm text-gray-600">Export schedule and templates to PDF.</div>
         </Link>
       </nav>
     </main>

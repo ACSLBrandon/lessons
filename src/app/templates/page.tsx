@@ -184,9 +184,12 @@ export default function TemplatesPage() {
             <ul className="space-y-1">
               {activities.map((a,i)=> (
                 <li key={i} className="flex items-start justify-between border rounded px-3 py-2">
-                  <div>
-                    <div className="text-sm font-medium">{a.title}</div>
-                    {a.description ? <div className="text-xs text-gray-600">{a.description}</div> : null}
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 text-xs font-mono text-gray-500">{i+1}.</span>
+                    <div>
+                      <div className="text-sm font-medium">{a.title}</div>
+                      {a.description ? <div className="text-xs text-gray-600">{a.description}</div> : null}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button type="button" onClick={()=>{
@@ -280,10 +283,11 @@ export default function TemplatesPage() {
               <div className="grid md:grid-cols-3 gap-2 text-sm mt-2">
                 <div><div className="text-gray-600">Objectives</div><div>{t.objectives || <span className="text-gray-400">—</span>}</div></div>
                 <div><div className="text-gray-600">Activities</div><div>{(t.activities && t.activities.length>0) ? (
-                  <ul className="list-disc pl-5 space-y-1">{t.activities.map((a,i)=>(
-                    <li key={i}>
+                  <ul className="space-y-1">{t.activities.map((a,i)=>(
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="w-6 text-xs font-mono text-gray-500">{i+1}.</span>
                       {typeof a === "string" ? (
-                        a
+                        <span>{a}</span>
                       ) : (
                         <div>
                           <div className="font-medium">{a.title}</div>

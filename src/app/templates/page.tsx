@@ -164,7 +164,7 @@ export default function TemplatesPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <div className="h-4" />
+          <div className="h-6" />
           <label className="block text-sm font-medium">Activities</label>
           <div className="grid md:grid-cols-6 gap-2 items-start">
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 h-10 md:col-span-2"/>
@@ -221,7 +221,7 @@ export default function TemplatesPage() {
         </div>
 
         <div>
-          <div className="h-4" />
+          <div className="h-6" />
           <label className="block text-sm font-medium">Attach standards (optional)</label>
           <div className="grid gap-2 md:grid-cols-4 items-start">
             <input value={stdQuery} onChange={e=>setStdQuery(e.target.value)} placeholder="Search standards" className="border rounded px-3 py-2 md:col-span-2"/>

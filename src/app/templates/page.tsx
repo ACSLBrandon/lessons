@@ -164,6 +164,7 @@ export default function TemplatesPage() {
           </div>
         </div>
         <div className="space-y-2">
+          <div className="h-4" />
           <label className="block text-sm font-medium">Activities</label>
           <div className="grid md:grid-cols-6 gap-2 items-start">
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 h-10 md:col-span-2"/>
@@ -220,13 +221,14 @@ export default function TemplatesPage() {
         </div>
 
         <div>
+          <div className="h-4" />
           <label className="block text-sm font-medium">Attach standards (optional)</label>
           <div className="grid gap-2 md:grid-cols-4 items-start">
             <input value={stdQuery} onChange={e=>setStdQuery(e.target.value)} placeholder="Search standards" className="border rounded px-3 py-2 md:col-span-2"/>
-            <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
+            <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 h-10">
               {subjects.map(s => <option key={s} value={s}>{s || "All subjects"}</option>)}
             </select>
-            <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2">
+            <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2 h-10">
               {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
             </select>
             <button type="button" disabled={suggestLoading} onClick={async()=>{
@@ -266,10 +268,10 @@ export default function TemplatesPage() {
         <h2 className="font-semibold">Your lesson plans ({filtered.length})</h2>
         <div className="grid gap-2 md:grid-cols-4">
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search" className="border rounded px-3 py-2 md:col-span-2"/>
-          <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2">
+          <select value={filterSubject} onChange={e=>setFilterSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 h-10">
             {subjects.map(s => <option key={s} value={s}>{s || "All subjects"}</option>)}
           </select>
-          <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2">
+          <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2 h-10">
             {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
           </select>
         </div>

@@ -137,7 +137,7 @@ export default function TemplatesPage() {
               {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
             </select>
           </div>
-          <div className="self-end md:col-span-1 justify-self-end">
+          <div className="self-end md:col-span-1">
             <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function TemplatesPage() {
           <div className="grid md:grid-cols-8 gap-2 items-start">
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 h-10 md:col-span-3"/>
             <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 h-10 md:col-span-3"/>
-            <div className="flex gap-2 md:col-span-2 justify-self-end">
+            <div className="flex gap-2 md:col-span-2">
               <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
               <button type="button" disabled={aiLoading} onClick={async()=>{
                 try {
@@ -192,7 +192,7 @@ export default function TemplatesPage() {
                       {a.description ? <div className="text-xs text-gray-600">{a.description}</div> : null}
                     </div>
                   </div>
-                  <div className="flex gap-2 md:col-span-2 justify-self-end">
+                  <div className="flex gap-2 md:col-span-2">
                     <button type="button" onClick={()=>{
                       const nt=prompt("Edit title", a.title);
                       if(nt===null) return; const t=nt.trim(); if(!t) return;

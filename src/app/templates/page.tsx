@@ -127,13 +127,13 @@ export default function TemplatesPage() {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Subject</label>
-            <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 w-full">
+            <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 h-10 w-full">
               {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Grade</label>
-            <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2 w-full">
+            <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2 h-10 w-full">
               {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
             </select>
           </div>
@@ -143,7 +143,7 @@ export default function TemplatesPage() {
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Objectives</label>
-          <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20"/>
+          <textarea value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Objectives" className="border rounded px-3 py-2 w-full min-h-20 resize-none"/>
           <div className="flex gap-2">
             <button type="button" disabled={aiLoading} onClick={async ()=>{
               try {
@@ -166,8 +166,8 @@ export default function TemplatesPage() {
         <div className="space-y-2">
           <label className="block text-sm font-medium">Activities</label>
           <div className="grid md:grid-cols-6 gap-2 items-start">
-            <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 md:col-span-2"/>
-            <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 md:col-span-3"/>
+            <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 h-10 md:col-span-2"/>
+            <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 h-10 md:col-span-3"/>
             <div className="flex gap-2">
               <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
               <button type="button" disabled={aiLoading} onClick={async()=>{
@@ -208,15 +208,15 @@ export default function TemplatesPage() {
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Materials</label>
-          <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20"/>
+          <textarea value={materials} onChange={e=>setMaterials(e.target.value)} placeholder="Materials" className="border rounded px-3 py-2 w-full min-h-20 resize-none"/>
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Concepts</label>
-          <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20"/>
+          <textarea value={concepts} onChange={e=>setConcepts(e.target.value)} placeholder="Concepts" className="border rounded px-3 py-2 w-full min-h-20 resize-none"/>
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Discussion</label>
-          <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20"/>
+          <textarea value={discussion} onChange={e=>setDiscussion(e.target.value)} placeholder="Discussion" className="border rounded px-3 py-2 w-full min-h-20 resize-none"/>
         </div>
 
         <div>

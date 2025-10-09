@@ -120,25 +120,25 @@ export default function TemplatesPage() {
 
       <section className="space-y-4">
         <h2 className="font-semibold">{editingId ? "Edit lesson plan" : "New lesson plan"}</h2>
-        <div className="grid gap-2 md:grid-cols-8 items-start">
-          <div className="md:col-span-5">
+        <div className="grid gap-2 md:grid-cols-12 items-start">
+          <div className="md:col-span-7">
             <label className="block text-sm font-medium mb-1">Title</label>
             <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Title" className="border rounded px-3 py-2 w-full"/>
           </div>
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium mb-1">Subject</label>
             <select value={subject} onChange={e=>setSubject(e.target.value as Template["subject"])} className="border rounded px-3 py-2 h-10 w-full">
               {subjects.map(s => <option key={s} value={s}>{s || "Subject"}</option>)}
             </select>
           </div>
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium mb-1">Grade</label>
             <select value={grade} onChange={e=>setGrade(e.target.value)} className="border rounded px-3 py-2 h-10 w-full">
               {grades.map(g => <option key={g} value={g}>{g || "Grade"}</option>)}
             </select>
           </div>
-          <div className="self-end md:col-span-1">
-            <button onClick={upsert} className="border rounded px-3 py-2 bg-blue-600 text-white">{editingId ? "Update" : "Add"}</button>
+          <div className="self-end md:col-span-1 flex">
+            <button onClick={upsert} className="border rounded px-3 py-2 bg-emerald-600 text-white grow">{editingId ? "Update" : "Add"}</button>
           </div>
         </div>
         <div className="space-y-2">
@@ -170,7 +170,7 @@ export default function TemplatesPage() {
             <input value={newActivityTitle} onChange={e=>setNewActivityTitle(e.target.value)} placeholder="Activity title" className="border rounded px-3 py-2 h-10 md:col-span-3"/>
             <input value={newActivityDesc} onChange={e=>setNewActivityDesc(e.target.value)} placeholder="Description (optional)" className="border rounded px-3 py-2 h-10 md:col-span-3"/>
             <div className="flex gap-2 md:col-span-2">
-              <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2">Add</button>
+              <button type="button" onClick={()=>{ const t=newActivityTitle.trim(); const d=newActivityDesc.trim(); if(!t) return; setActivities(prev=>[...prev,{ title:t, description:d||undefined }]); setNewActivityTitle(""); setNewActivityDesc(""); }} className="border rounded px-3 py-2 grow">Add</button>
               <button type="button" disabled={aiLoading} onClick={async()=>{
                 try {
                   setAiLoading(true);
@@ -178,7 +178,7 @@ export default function TemplatesPage() {
                   const data = await res.json();
                   if (data?.text) setNewActivityDesc(prev => (prev?.trim()? prev+"\n" : "") + data.text);
                 } finally { setAiLoading(false); }
-              }} className="border rounded px-3 py-2 bg-emerald-600 text-white">{aiLoading?"AI…":"AI Describe"}</button>
+              }} className="border rounded px-3 py-2 bg-emerald-600 text-white grow">{aiLoading?"AI…":"AI Describe"}</button>
             </div>
           </div>
           {activities.length>0 && (
@@ -231,16 +231,6 @@ export default function TemplatesPage() {
             <select value={filterGrade} onChange={e=>setFilterGrade(e.target.value)} className="border rounded px-3 py-2 h-10">
               {grades.map(g => <option key={g} value={g}>{g || "All grades"}</option>)}
             </select>
-            <button type="button" disabled={suggestLoading} onClick={async()=>{
-              try {
-                setSuggestLoading(true);
-                const lesson = { title, subject, grade, objectives, activities, materials, concepts, discussion };
-                const candidates = allStandards.map(s=>({ id: s.id, text: s.text, subject: s.subject, grade: s.grade }));
-                const res = await fetch("/api/standards/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lesson, candidates }) });
-                const data = await res.json();
-                if (Array.isArray(data?.ids)) setSuggestedIds(data.ids);
-              } finally { setSuggestLoading(false); }
-            }} className="border rounded px-3 py-2 bg-emerald-600 text-white">{suggestLoading?"AI…":"AI Suggest Standards"}</button>
           </div>
           <ul className="mt-2 space-y-1 max-h-44 overflow-auto border rounded p-2">
             {standardsFiltered.map(s => (
@@ -252,6 +242,16 @@ export default function TemplatesPage() {
               </li>
             ))}
           </ul>
+          <button type="button" disabled={suggestLoading} onClick={async()=>{
+              try {
+                setSuggestLoading(true);
+                const lesson = { title, subject, grade, objectives, activities, materials, concepts, discussion };
+                const candidates = allStandards.map(s=>({ id: s.id, text: s.text, subject: s.subject, grade: s.grade }));
+                const res = await fetch("/api/standards/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lesson, candidates }) });
+                const data = await res.json();
+                if (Array.isArray(data?.ids)) setSuggestedIds(data.ids);
+              } finally { setSuggestLoading(false); }
+            }} className="border rounded px-3 py-2 mt-2 bg-emerald-600 text-white">{suggestLoading?"AI…":"AI Suggest Standards"}</button>
           {standardIds.length > 0 && (
             <div className="text-sm text-gray-700 mt-2">Selected: {standardIds.join(", ")}</div>
           )}
